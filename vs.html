@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Home Troubleshooter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .chat-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background-color: #4a6fa5;
+            color: white;
+            padding: 15px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            text-align: center;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 70%;
+            line-height: 1.4;
+        }
+        
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .bot-message {
+            background-color: #f1f1f1;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        #send-button {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        #send-button:hover {
+            background-color: #3a5a80;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            border-radius: 18px;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            width: fit-content;
+        }
+        
+        .typing-indicator span {
+            height: 10px;
+            width: 10px;
+            background-color: #666;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        .api-key-container {
+            margin-bottom: 20px;
+            display: flex;
+        }
+        
+        #api-key-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        .device-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <section>Made by -</section>
+    <section>Himansu 12304038 K23NV A30</section>
+    <section>Ankit Kumar 12306330 K23NV A26</section>
+    <section>MD Most0fa shah 12312798 K23NV A31 </section>
+    <div class="container">
+        <div class="api-key-container">
+            <input type="password" id="api-key-input" placeholder="Enter your API key">
+            <button id="save-key-button">Save Key</button>
+        </div>
+        
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>AI Smart Home Troubleshooter</h2>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    Hello! I'm your AI Smart Home Troubleshooter. I can help you diagnose and fix issues with your smart home devices. 
+                    What seems to be the problem?
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="user-input" placeholder="Type your smart home issue here...">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const typingIndicator = document.getElementById('typing-indicator');
+            const apiKeyInput = document.getElementById('api-key-input');
+            const saveKeyButton = document.getElementById('save-key-button');
+            
+            // Load saved API key from localStorage
+            const savedApiKey = localStorage.getItem('smartHomeApiKey');
+            if (savedApiKey) {
+                apiKeyInput.value = savedApiKey;
+            }
+            
+            // Save API key
+            saveKeyButton.addEventListener('click', function() {
+                const apiKey = apiKeyInput.value.trim();
+                if (apiKey) {
+                    localStorage.setItem('smartHomeApiKey', apiKey);
+                    alert('API key saved successfully!');
+                } else {
+                    alert('Please enter a valid API key');
+                }
+            });
+            
+            // Send message when button is clicked or Enter is pressed
+            sendButton.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+                
+                // Display user message
+                addMessage(message, 'user');
+                userInput.value = '';
+                
+                // Show typing indicator
+                typingIndicator.style.display = 'block';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Get API key
+                const apiKey = localStorage.getItem('smartHomeApiKey') || '';
+                
+                // Call the AI API (simulated here - replace with actual API call)
+                setTimeout(() => {
+                    typingIndicator.style.display = 'none';
+                    
+                    if (!apiKey) {
+                        addMessage("Please enter and save your API key first to use the troubleshooting service.", 'bot');
+                        return;
+                    }
+                    
+                    // In a real implementation, you would call your actual API here
+                    // For this example, we'll simulate responses
+                    const response = generateAIResponse(message, apiKey);
+                    addMessage(response, 'bot');
+                }, 1500);
+            }
+            
+            function addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.classList.add(sender + '-message');
+                
+                // Add device icons if mentioned
+                let processedText = text;
+                const devices = {
+                    'thermostat': '🌡️',
+                    'light': '💡',
+                    'lock': '🔒',
+                    'camera': '📷',
+                    'speaker': '🔊',
+                    'router': '📶',
+                    'plug': '🔌'
+                };
+                
+                for (const [device, icon] of Object.entries(devices)) {
+                    if (text.toLowerCase().includes(device)) {
+                        processedText = processedText.replace(new RegExp(device, 'gi'), 
+                            `<span title="${device}">${icon}</span> ${device}`);
+                    }
+                }
+                
+                messageDiv.innerHTML = processedText;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // This function simulates API responses - replace with actual API calls
+            function generateAIResponse(userMessage, apiKey) {
+                // In a real implementation, you would:
+                // 1. Call your AI API endpoint with the user's message and API key
+                // 2. Process the response
+                // 3. Return the generated answer
+                
+                console.log("API Key used:", apiKey); // For debugging (don't do this in production)
+                
+                // Simulated responses based on common smart home issues
+                const lowerMessage = userMessage.toLowerCase();
+                
+                if (lowerMessage.includes('connect') || lowerMessage.includes('wifi')) {
+                    return "For connectivity issues, try these steps:\n1. Restart your router and the device\n2. Ensure you're using the correct WiFi network\n3. Check if the device is within range of your router\n4. Verify the device is in pairing mode if it's a new setup";
+                } else if (lowerMessage.includes('thermostat') || lowerMessage.includes('temperature')) {
+                    return "Thermostat issues? Try:\n1. Check if the thermostat has power\n2. Verify the temperature settings\n3. Ensure it's properly connected to your HVAC system\n4. Replace batteries if it's battery-operated";
+                } else if (lowerMessage.includes('light') || lowerMessage.includes('bulb')) {
+                    return "For smart light problems:\n1. Check if the bulb is properly screwed in\n2. Verify it's connected in the app\n3. Try resetting the bulb (usually by turning on/off 3-5 times)\n4. Ensure your hub is online if using one";
+                } else if (lowerMessage.includes('lock') || lowerMessage.includes('door')) {
+                    return "Smart lock troubleshooting:\n1. Check battery level - low power can cause issues\n2. Ensure the lock is properly aligned with the door\n3. Verify your phone has Bluetooth enabled if using that connection\n4. Try manual operation to check mechanical function";
+                } else if (lowerMessage.includes('not responding') || lowerMessage.includes('offline')) {
+                    return "When devices go offline:\n1. Check your home internet connection\n2. Restart the device\n3. Verify the device has power\n4. Check for firmware updates in the manufacturer's app";
+                } else if (lowerMessage.includes('voice') || lowerMessage.includes('alexa') || lowerMessage.includes('google')) {
+                    return "Voice control issues? Try:\n1. Ensure your voice assistant device can hear you\n2. Check if the smart device is linked to your voice assistant\n3. Try rediscovering devices in the voice assistant app\n4. Restart your voice assistant device";
+                } else {
+                    return "I can help with various smart home issues. Could you please provide more details about the problem you're experiencing? For example:\n- Which device is having issues?\n- What exactly is happening or not working?\n- When did the problem start occurring?";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
